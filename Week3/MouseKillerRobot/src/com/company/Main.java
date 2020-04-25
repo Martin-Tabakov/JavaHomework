@@ -11,7 +11,7 @@ public class Main {
 
         while (toRun){
 
-            GetObstacle();
+            ProcessObstacle();
 
             if(HasEnoughBattery(batteryCharge)){
                 if(IsMouseDetected() && IsHitFurnitureSafe()){
@@ -24,25 +24,26 @@ public class Main {
             }
             else{
                 System.out.println("Battery Empty! Going For Recharge.");
-                while (batteryCharge==0){
-                    if(IsBatteryRecharged()){
-                        System.out.println("Recharge Successful!");
-                        batteryCharge=4;}
-                    else System.out.println("Failed to charge! Trying again.");
-                }
+                batteryCharge=ChargeBattery(batteryCharge);
             }
-
-            if(TurnOffRobot()) toRun=false;
+            toRun=!TurnOffRobot();
         }
+
         Communicate();
 
     }
+    public static int ChargeBattery(int batteryCharge){
+        while (batteryCharge==0){
+            if(IsBatteryRecharged()){
+                System.out.println("Recharge Successful!");
+                batteryCharge=4;}
+            else System.out.println("Failed to charge! Trying again.");
+        }
+        return batteryCharge;
+    }
+
     public static void GetObstacle(){
-        System.out.println("Object Codes:");
-        System.out.println("Wall (1)");
-        System.out.println("Chair (2)");
-        System.out.println("Nothing (3)");
-        System.out.print ("Insert Object Code: ");
+
         Scanner scanner = new Scanner(System.in);
         int obstacle = scanner.nextInt();
 
@@ -61,6 +62,19 @@ public class Main {
                 GetObstacle();
         }
     }
+
+    public static void ProcessObstacle(){
+        PrintObstacleMenu();
+        GetObstacle();
+    }
+    public static void  PrintObstacleMenu(){
+        System.out.println("Object Codes:");
+        System.out.println("Wall (1)");
+        System.out.println("Chair (2)");
+        System.out.println("Nothing (3)");
+        System.out.print ("Insert Object Code: ");
+    }
+
     public static int GetPixels(){
         System.out.print("Insert Pixel Count: ");
         Scanner scanner = new Scanner(System.in);
@@ -75,6 +89,7 @@ public class Main {
     public static boolean HasEnoughBattery(int batteryCharge){
         return batteryCharge>0;
     }
+
     public static boolean IsHitFurnitureSafe(){
         Random random = new Random();
         boolean res =(random.nextInt(9)+1)!=5;
@@ -93,13 +108,16 @@ public class Main {
         for (int i=10;i>1;i-=2) System.out.println("I am a Robotttttt "+ i);
     }
     public static boolean TurnOffRobot(){
+        PrintTurnOffRobotMeu();
+        Scanner scanner = new Scanner(System.in);
+        int responseCode=scanner.nextInt();
+        return responseCode==1;
+    }
+    public static void PrintTurnOffRobotMeu(){
         System.out.println("Cycle Completed!");
         System.out.println("Stop Robot?");
         System.out.println("Yes (1)");
         System.out.println("No (0)");
         System.out.print("Insert code: ");
-        Scanner scanner = new Scanner(System.in);
-        int responseCode=scanner.nextInt();
-        return responseCode==1;
     }
 }
