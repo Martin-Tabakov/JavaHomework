@@ -7,6 +7,7 @@ public class PseudoChess {
         String[][] gameBoard = new String[6][6];
         boolean toRun = true;
         int playerId = 0;
+        int currentTurn=1;
 
         initBoard(gameBoard);
 
@@ -19,16 +20,35 @@ public class PseudoChess {
         while (toRun) {
             format.drawBoard(gameBoard);
             format.drawLine();
-            announceCurrentPlayer(playerId);
+            announceCurrentPlayer(getPlayerColor(playerId));
             move.getPawnPositions(playerId);
             move.makeMove();
             toRun= !move.isKingDead();
             playerId= switchPlayer(playerId);
         }
+        printWinMessage(getPlayerColor(playerId));
     }
     public static int switchPlayer(int playerId){
         if(playerId==1) return 0;
         return 1;
+    }
+    public static void printWinMessage(String color){
+        System.out.println("Game Over!");
+        System.out.println("The player with"+ color+" figures wins!");
+    }
+    public static String getPlayerColor(int playerId){
+        if (playerId==0) return "White";
+        return "Black";
+    }
+    public  static void announceCurrentPlayer(String color){
+        System.out.println("Current turn for "+color+" figures.");
+    }
+    public static void printInitialMessage(){
+        System.out.println("A game of Pseudo Chess!");
+        System.out.println("Moving figure is made as following:");
+        System.out.println("Type Coordinates of the figure to move and coordinates of the destination");
+        System.out.println("EXAMPLE: AD-BD (first char is the roll, the second- column, use any separator in-between)");
+        System.out.println("Good Luck!");
     }
 
     public static void initBoard(String[][] board) {
@@ -42,17 +62,6 @@ public class PseudoChess {
         for (int i = 1; i < 5; i++)
             for (int j = 0; j < 6; j++) board[i][j] = "   ";
     }
-    public  static void announceCurrentPlayer(int playerId){
-        if(playerId==0) System.out.println("Current turn for White figures.");
-        else System.out.println("Current turn for Black figures.");
-    }
-    public static void printInitialMessage(){
-        System.out.println("A game of Pseudo Chess!");
-        System.out.println("Moving figure is made as following:");
-        System.out.println("Type Coordinates of the figure to move and coordinates of the destination");
-        System.out.println("EXAMPLE: AD-BD (first char is the roll, the second- column, use any separator in-between)");
-        System.out.println("Good Luck!");
-    }
 }
 
 class Move {
@@ -63,6 +72,7 @@ class Move {
     Coordinates newPawnPosition;
     String pawnName;
     String newPawnName;
+    float turn=1;
 
     public Move(Scanner scanner, String[][] gameBoard) {
         this.scanner = scanner;
@@ -72,17 +82,17 @@ class Move {
 
     public void getPawnPositions(int playerId) {
         this.playerId = playerId;
-
+        System.out.println("Current turn: "+(int)(turn));
         do {
             printTurnMessage();
             decodeCoordinates(getCoordinates());
 
         } while (!areCoordinatesCorrect());
-
+        turn+=0.5;
     }
 
     private String getCoordinates() {
-        return scanner.next();
+        return scanner.next().toUpperCase();
     }
 
     private boolean areCoordinatesCorrect() {
@@ -90,8 +100,12 @@ class Move {
     }
 
     private boolean isFirstPawnCorrect() {
-        if (pawnOffBoard(pawnPosition)) return false;
+        if (pawnOffBoard(pawnPosition) || canPlayDonkey()) return false;
         return getPawnPrefix(pawnName) == getPlayerPrefix();
+    }
+
+    private boolean canPlayDonkey(){
+        return ((int)(turn)%3!=0 && pawnName.endsWith("D "));
     }
 
     private boolean pawnOffBoard(Coordinates pawnCoordinates) {
@@ -174,7 +188,6 @@ class Move {
     }
 
     private void decodeCoordinates(String rawInput) {
-        //Possible ArrayIndexOutOfBound
         this.pawnPosition = separateInput(0, rawInput);
         this.pawnName = gameBoard[pawnPosition.row][pawnPosition.column];
         this.newPawnPosition = separateInput(rawInput.length()-2, rawInput);
