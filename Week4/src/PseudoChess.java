@@ -1,3 +1,4 @@
+import java.security.PublicKey;
 import java.util.Scanner;
 
 public class PseudoChess {
@@ -13,12 +14,21 @@ public class PseudoChess {
         Format format = new Format();
         Move move = new Move(scanner, gameBoard);
 
+        printInitialMessage();
+
         while (toRun) {
             format.drawBoard(gameBoard);
+            format.drawLine();
+            announceCurrentPlayer(playerId);
             move.getPawnPositions(playerId);
             move.makeMove();
             toRun= !move.isKingDead();
+            playerId= switchPlayer(playerId);
         }
+    }
+    public static int switchPlayer(int playerId){
+        if(playerId==1) return 0;
+        return 1;
     }
 
     public static void initBoard(String[][] board) {
@@ -31,6 +41,17 @@ public class PseudoChess {
 
         for (int i = 1; i < 5; i++)
             for (int j = 0; j < 6; j++) board[i][j] = "   ";
+    }
+    public  static void announceCurrentPlayer(int playerId){
+        if(playerId==0) System.out.println("Current turn for White figures.");
+        else System.out.println("Current turn for Black figures.");
+    }
+    public static void printInitialMessage(){
+        System.out.println("A game of Pseudo Chess!");
+        System.out.println("Moving figure is made as following:");
+        System.out.println("Type Coordinates of the figure to move and coordinates of the destination");
+        System.out.println("EXAMPLE: AD-BD (first char is the roll, the second- column, use any separator in-between)");
+        System.out.println("Good Luck!");
     }
 }
 
@@ -156,7 +177,7 @@ class Move {
         //Possible ArrayIndexOutOfBound
         this.pawnPosition = separateInput(0, rawInput);
         this.pawnName = gameBoard[pawnPosition.row][pawnPosition.column];
-        this.newPawnPosition = separateInput(2, rawInput);
+        this.newPawnPosition = separateInput(rawInput.length()-2, rawInput);
         this.newPawnName = gameBoard[newPawnPosition.row][newPawnPosition.column];
     }
 
@@ -173,7 +194,7 @@ class Move {
     }
 
     private void printTurnMessage() {
-        System.out.println("Insert Coordinates:");
+        System.out.print("Insert Coordinates: ");
     }
 
     Coordinates[][] movements;
@@ -224,7 +245,7 @@ class Format {
     final int width = 25;
     final char borderChar = '-';
 
-    private void drawLine() {
+    public void drawLine() {
         for (int i = 0; i < width; i++) System.out.print(borderChar);
         System.out.println();
     }
