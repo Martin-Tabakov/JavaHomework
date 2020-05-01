@@ -1,4 +1,3 @@
-import java.util.Dictionary;
 import java.util.Scanner;
 
 public class PseudoChess {
@@ -17,8 +16,8 @@ public class PseudoChess {
         while (toRun) {
             format.drawBoard(gameBoard);
             move.getPawnPositions(playerId);
-
-            toRun = false;
+            move.makeMove();
+            toRun= !move.isKingDead();
         }
     }
 
@@ -208,6 +207,15 @@ class Move {
     }
 
     //
+    public void makeMove(){
+        gameBoard[newPawnPosition.row][newPawnPosition.column]=
+        gameBoard[pawnPosition.row][pawnPosition.column];
+        gameBoard[pawnPosition.row][pawnPosition.column]="   ";
+    }
+    public boolean isKingDead(){
+        return newPawnName.endsWith("K ");
+    }
+
 
 }
 
