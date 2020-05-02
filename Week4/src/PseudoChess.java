@@ -1,5 +1,7 @@
 import java.util.Scanner;
-
+//To-Do
+//Rewrite Dwarfs ,decodeCoordinates
+//no string as Input
 /**
  * Game of Pseudo Chess HomeWork 4
  * @author Martin Tabakov
@@ -10,7 +12,7 @@ public class PseudoChess {
 
         String[][] gameBoard = new String[6][6];
         boolean gameActive = true;
-        int playerId = 0;
+        int playerId = 1;
 
         initBoard(gameBoard);
 
@@ -25,14 +27,16 @@ public class PseudoChess {
             format.drawBoard(gameBoard);
             format.drawLine();
 
+            playerId= switchPlayer(playerId);
             announceCurrentPlayer(getPlayerColor(playerId));
 
             game.getPawnPositions(playerId);
             game.makeMove();
 
             gameActive= !game.isKingDead();
-            playerId= switchPlayer(playerId);
         }
+
+        format.drawBoard(gameBoard);
         printWinMessage(getPlayerColor(playerId));
     }
 
@@ -52,7 +56,7 @@ public class PseudoChess {
      */
     public static void printWinMessage(String color){
         System.out.println("Game Over!");
-        System.out.println("The player with"+ color+" figures wins!");
+        System.out.println("The player with "+ color+" figures wins!");
     }
 
     /**
@@ -81,6 +85,7 @@ public class PseudoChess {
         System.out.println("Moving figure is made as following:");
         System.out.println("Type Coordinates of the figure to move and coordinates of the destination");
         System.out.println("EXAMPLE: AD-BD (first char is the roll, the second- column, use any separator in-between)");
+        System.out.println("Note! Dwarfs work with destination coordinates not pointing to allied pawn.");
         System.out.println("Good Luck!");
     }
 
@@ -114,11 +119,13 @@ class Game {
     String pawnName;
     String moveToPosName;
     float turn=1;
+    boolean[] dwarfRightDir;
 
     public Game(Scanner scanner, String[][] gameBoard) {
         this.scanner = scanner;
         this.gameBoard = gameBoard;
         initMovements();
+        dwarfRightDir= new boolean[]{true,true};
     }
 
     /**
@@ -127,11 +134,16 @@ class Game {
      */
     public void getPawnPositions(int playerId) {
         this.playerId = playerId;
-        System.out.println("Current turn: "+Math.floor(turn));
-        do {
+        System.out.println("Current turn: "+(int)Math.floor(turn));
+        boolean offBoard;
+        boolean wrongPositions=true;
+
+        while (wrongPositions){
             printTurnMessage();
-            decodeCoordinates(getCoordinates());
-        } while (!areCoordinatesCorrect());
+            offBoard= decodeCoordinates(getCoordinates());
+            if (offBoard) continue;
+            wrongPositions=!areCoordinatesCorrect() ;
+        }
         turn+=0.5;
     }
 
@@ -146,12 +158,21 @@ class Game {
     /**
      * Assigns coordinates and names of the Starting pawn and the move-to field.
      * @param rawInput User inserted string with pawn position and move-to place.
+     * @return true if any pos off board
      */
-    private void decodeCoordinates(String rawInput) {
-        this.pawnPosition = separateInput(0, rawInput);
+    private boolean decodeCoordinates(String rawInput) {
+        Coordinates pos= separateInput(0, rawInput);
+        boolean offBoard = pawnOffBoard(pos);
+        if(offBoard) return true;
+        this.pawnPosition = pos;
         this.pawnName = gameBoard[pawnPosition.row][pawnPosition.column];
-        this.moveToPosition = separateInput(rawInput.length() - 2, rawInput);
+
+        pos= separateInput(rawInput.length() - 2, rawInput);
+        offBoard = pawnOffBoard(pos);
+        if(offBoard) return true;
+        this.moveToPosition = pos;
         this.moveToPosName = gameBoard[moveToPosition.row][moveToPosition.column];
+        return  false;
     }
 
     /**
@@ -181,7 +202,7 @@ class Game {
      * @return Pawn start position and move-to position.
      */
     private String getCoordinates() {
-        return scanner.next().toUpperCase();
+        return scanner.nextLine().toUpperCase();
     }
 
     /**
@@ -197,7 +218,7 @@ class Game {
      * @return {@code true} if the  position is correct, else - {@code false}
      */
     private boolean isPawnPosCorrect() {
-        if (pawnOffBoard(pawnPosition) || canPlayDonkey()) return false;
+        if (canPlayDonkey()) return false;
         return getPawnPrefix(pawnName) == getPlayerPrefix();
     }
 
@@ -206,7 +227,7 @@ class Game {
      * @return {@code true} if possible, else - {@code false}
      */
     private boolean isPawnDestinationCorrect() {
-        return !pawnOffBoard(moveToPosition) && !friendlyPawnLocated() && pawnMovementCorrect();
+        return !friendlyPawnLocated() && pawnMovementCorrect();
     }
     /**
      * Validates the usage of the Donkey pawn
@@ -259,15 +280,35 @@ class Game {
     private boolean pawnMovementCorrect() {
         String noPrefixName = pawnName.substring(1);
         switch (noPrefixName){
-            case "Dw": return checkMovement(0);
+            case "Dw":
+                return movementDwarf();
+                //return checkMovement(0);
             case "D ": return checkMovement(1);
             case "Q ": return checkMovement(2);
             case "K ": return checkMovement(3);
-            case "M": return checkMovement(4);
+            case "M ": return checkMovement(4);
         }
         return false;
     }
 
+    private boolean movementDwarf(){
+        char prefix = getPawnPrefix(pawnName);
+        switch (prefix){
+            case 'w': moveDwarf(0,5,0,1,-1); break;
+            case 'b': moveDwarf(1,0,5,-1,1);break;
+        }
+        return true;
+    }
+
+    private void moveDwarf(int id,int FRoll, int SRoll,int moveOk,int moveNotOk) {
+
+        if (pawnPosition.row==FRoll) dwarfRightDir[id]=false;
+        if (pawnPosition.row==SRoll) dwarfRightDir[id]=true;
+
+        if (dwarfRightDir[id]) moveToPosition.row=pawnPosition.row+moveOk;
+        if (!dwarfRightDir[id]) moveToPosition.row=pawnPosition.row+moveNotOk;
+        moveToPosition.column=pawnPosition.column;
+    }
     /**
      * Cycles through the array of supported movements for a pawn.
      * Works by adding the current pawn positions with the supported positions.
@@ -297,7 +338,7 @@ class Game {
                 new Coordinates(2, 2), new Coordinates(-2, 2),
                 new Coordinates(2, -2), new Coordinates(-2, -2),
                 new Coordinates(2, 0), new Coordinates(-2, 0),
-                new Coordinates(0, 2), new Coordinates(0, 2),
+                new Coordinates(0, 2), new Coordinates(0, -2),
             },
             {
                 new Coordinates(1, 1), new Coordinates(-1, 1),
@@ -307,7 +348,7 @@ class Game {
                 new Coordinates(1, 1), new Coordinates(-1, 1),
                 new Coordinates(1, -1), new Coordinates(-1, -1),
                 new Coordinates(1, 0), new Coordinates(-1, 0),
-                new Coordinates(0, 1), new Coordinates(0, 1),
+                new Coordinates(0, 1), new Coordinates(0, -1),
 
             },
             {
