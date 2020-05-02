@@ -1,10 +1,6 @@
 import java.util.Scanner;
-//To-Do
-// Switch board every turn
-//Rewrite Dwarfs ,decodeCoordinates
-//no string as Input error, pawn name checks
 /**
- * Game of Pseudo Chess HomeWork 4
+ * Game of Pseudo Chess Homework 4
  * @author Martin Tabakov
  */
 public class PseudoChess {
@@ -41,46 +37,25 @@ public class PseudoChess {
         printWinMessage(getPlayerColor(playerId));
     }
 
-    /**
-     * Changes the active player every turn
-     * @param playerId current active player
-     * @return next active player
-     */
     public static int switchPlayer(int playerId){
         if(playerId==1) return 0;
         return 1;
     }
 
-    /**
-     * Prints the Game Over message
-     * @param color The color of the victorious figures
-     */
     public static void printWinMessage(String color){
         System.out.println("Game Over!");
         System.out.println("The player with "+ color+" figures wins!");
     }
 
-    /**
-     * Gets the player color based on his Id
-     * @param playerId the id of the player
-     * @return Player color
-     */
     public static String getPlayerColor(int playerId){
         if (playerId==0) return "White";
         return "Black";
     }
 
-    /**
-     * Tells who the current Player is by his Id
-     * @param color The Color of active player
-     */
     public  static void announceCurrentPlayer(String color){
         System.out.println("Current turn for "+color+" figures.");
     }
 
-    /**
-     * Prints welcoming message. Shows how to input data.
-     */
     public static void printInitialMessage(){
         System.out.println("A game of Pseudo Chess!");
         System.out.println("Moving figure is made as following:");
@@ -90,10 +65,6 @@ public class PseudoChess {
         System.out.println("Good Luck!");
     }
 
-    /**
-     * Places every pawn at its place with the corresponding prefix, alongside the empty spaces.
-     * @param board Game board that is played on.
-     */
     public static void initBoard(String[][] board) {
         String[] pawns = new String[]{"Dw", "D ", "Q ", "K ", "M ", "Dw"};
         char prefixW = 'w';
@@ -148,10 +119,6 @@ class Game {
         turn+=0.5;
     }
 
-    /**
-     * Message to tell the user to insert data.
-     * Shown also after wrongly user inserted data
-     */
     private void printTurnMessage() {
         System.out.print("Insert Coordinates: ");
     }
@@ -190,24 +157,16 @@ class Game {
         return coordinates;
     }
 
-    /**
-     *  Decodes single character to its corresponding numeric value.
-     * @param encodedPos Encoded character.
-     * @return Decoded value.
-     */
     private int getNumFromChar(char encodedPos) {
         return (int) encodedPos - 'A';
     }
 
-    /**
-     * @return Pawn start position and move-to position.
-     */
     private String getCoordinates() {
         return scanner.nextLine().toUpperCase();
     }
 
     /**
-     * Checks whether both the Pawn coordinates and those of the move-to position
+     * Checks whether both the Pawn coordinates and those of the move-to position are correct
      * @return {@code true} if all coordinates are correct, else - {@code false}
      */
     private boolean areCoordinatesCorrect() {
@@ -230,37 +189,20 @@ class Game {
     private boolean isPawnDestinationCorrect() {
         return !friendlyPawnLocated() && pawnMovementCorrect();
     }
-    /**
-     * Validates the usage of the Donkey pawn
-     * @return {@code true} if can play the Donkey pawn, else - {@code false}
-     */
+
     private boolean canPlayDonkey(){
         return (Math.floor(turn)%3!=0 && pawnName.endsWith("D "));
     }
 
-    /**
-     * Checks whether the coordinates are outside the border limits.
-     * @param pawnCoordinates The coordinates of the pawn
-     * @return {@code true} if the pawns coordinates is outside the board, else - {@code false}
-     */
     private boolean pawnOffBoard(Coordinates pawnCoordinates) {
         return (pawnCoordinates.column > 5 || pawnCoordinates.column < 0) ||
                 (pawnCoordinates.row > 5 || pawnCoordinates.row < 0);
     }
 
-    /**
-     * Gets the pawn prefix
-     * @param pawn Pawn to get its prefix
-     * @return The prefix of the selected pawn
-     */
     private char getPawnPrefix(String pawn) {
         return pawn.charAt(0);
     }
 
-    /**
-     * Gets the active player prefix
-     * @return The prefix of the active player
-     */
     private char getPlayerPrefix() {
         if (playerId == 0) return 'w';
         return 'b';
@@ -391,10 +333,6 @@ class Format {
         System.out.println();
     }
 
-    /**
-     * Draws the game board with the pawns.
-     * @param board  Takes a matrix, to be drawn as game board.
-     */
     public void drawBoard(String[][] board) {
         drawLine();
         for (int row = 0; row < board.length; row++) {
