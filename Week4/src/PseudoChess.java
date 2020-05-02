@@ -1,7 +1,8 @@
 import java.util.Scanner;
 //To-Do
+//
 //Rewrite Dwarfs ,decodeCoordinates
-//no string as Input
+//no string as Input error, pawn name checks
 /**
  * Game of Pseudo Chess HomeWork 4
  * @author Martin Tabakov
