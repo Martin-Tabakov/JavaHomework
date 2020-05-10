@@ -36,7 +36,7 @@ public class Main {
      * @return Valid menu option
      */
     public static int getMenuOption(Scanner scanner) {
-        System.out.println("Insert Menu Option");
+        System.out.println("Въведи номер на опция от менюто");
         int menuOption;
         do {
             menuOption = scanner.nextInt();
@@ -60,10 +60,7 @@ public class Main {
                 array.sortDesc();
                 break;
             case 3:
-                int num = scanner.nextInt();
-                int pos = array.getNPosNum(num);
-                if (pos == -1) System.out.println("Числото не е намерено");
-                else System.out.println("Числото е намерено на" + pos);
+                getNumberPosition(scanner,array);
                 break;
             case 4:
                 array.shuffle();
@@ -85,15 +82,23 @@ public class Main {
                 else System.out.println("Масивът не е симетричен");
                 break;
             case 10:
-                array.reverse();
+                array.reverseValues();
                 break;
             case 11:
-                array.print();
+                array.printValues();
                 break;
             case 12:
                 return false;
         }
         return true;
+    }
+
+    public static void getNumberPosition(Scanner scanner,MyArray array){
+        System.out.print("Въведи число:");
+        int num = scanner.nextInt();
+        int pos = array.getNPosNum(num);
+        if (pos == -1) System.out.println("Числото не е намерено");
+        else System.out.println("Числото е намерено на позиция " + pos);
     }
 
     /**

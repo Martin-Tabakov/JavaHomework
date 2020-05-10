@@ -23,6 +23,9 @@ public class MyArray {
 
     }
 
+    /**
+     * Sorts the array in ascending order
+     */
     public void sortAsc() {
         int temp;
         for (int i = 0; i < arraySize - 1; i++) {
@@ -36,6 +39,9 @@ public class MyArray {
         }
     }
 
+    /**
+     * Sorts the array in descending order
+     */
     public void sortDesc() {
         int temp;
         for (int i = 0; i < arraySize - 1; i++) {
@@ -49,27 +55,35 @@ public class MyArray {
         }
     }
 
+    /**
+     * Searches for a number`s position withing the array
+     * @param toSearch The number to be searched
+     * @return The position where the number is located at. If the number is not found returns {@code -1}
+     */
     public int getNPosNum(int toSearch) {
         sortAsc();
         return bSearch(0,arraySize-1,toSearch);
     }
 
     /**
-     * Binary search with recursion
-     * @param leftBound left bound
-     * @param rightBound right bound
+     * Binary search
+     * @param leftBound left bound of the interval
+     * @param rightBound right bound of the interval
      * @param searchedNum searched number
-     * @return the number found or -1 if not found
+     * @return The position where the number is located at. If the number is not found returns {@code -1}
      */
     private int bSearch(int leftBound,int rightBound,int searchedNum){
 
         if(leftBound>rightBound) return -1;
-        int m=(leftBound+rightBound)/2;
-        if(searchedNum==array[m]) return m;
-        if(searchedNum>array[m]) bSearch(leftBound,m-1,searchedNum);
-        return bSearch(m+1,rightBound,searchedNum);
+        int middle=(leftBound+rightBound)/2;
+        if(searchedNum==array[middle]) return middle;
+        if(searchedNum>array[middle]) bSearch(leftBound,middle-1,searchedNum);
+        return bSearch(middle+1,rightBound,searchedNum);
     }
 
+    /**
+     * Shuffles the number values within the array
+     */
     public void shuffle() {
         Random random = new Random();
         int temp;
@@ -103,6 +117,10 @@ public class MyArray {
         return avg;
     }
 
+    /**
+     * Checks whether the array is symmetrical.
+     * @return {@code true} if the array is symmetrical, otherwise {@code false}
+     */
     public boolean isSymmetrical() {
         for (int i = 0; i <= arraySize / 2; i++) {
             if (array[i] != array[arraySize - i - 1]) return false;
@@ -110,7 +128,10 @@ public class MyArray {
         return true;
     }
 
-    public void reverse() {
+    /**
+     * Reverses the numbers in the array
+     */
+    public void reverseValues() {
         for (int i = 0; i <= arraySize / 2; i++) {
             int temp = array[i];
             array[i] = array[arraySize - i - 1];
@@ -118,17 +139,23 @@ public class MyArray {
         }
     }
 
-    public void print() {
+    /**
+     * Prints to the console all of the array values
+     */
+    public void printValues() {
         for (int value : array) System.out.print(value + " ");
         System.out.println();
     }
 
+    /**
+     * Fills the values in the array and calculates their total and average value.
+     */
     public void setNumbers() {
         int i = 0;
         boolean correctNum;
         while (i<arraySize){
 
-            System.out.print("Insert number[" + (i+1) + "] : ");
+            System.out.print( String.format("Въведи число в [%d] : ",i) );
             array[i] = scanner.nextInt();
             correctNum = validateNumber(array[i], 0, 101);
 
@@ -137,17 +164,30 @@ public class MyArray {
                 i++;
             }
         }
+        calculateAverage();
+    }
 
+    private void calculateAverage(){
         avg = (double) sum / (double) arraySize;
     }
 
+    /**
+     * Checks whether a number is within certain range
+     * @param number value to be checked
+     * @param min the lowest value
+     * @param max the highest value. If min == max then the number is checked for lowest value only
+     * @return {@code true} if the number is within range, otherwise {@code false}
+     */
     public static boolean validateNumber(int number, int min, int max) {
-        if (min == max) return number > min;
+        if (min == max) return number >= min;
         return number >= min && number < max;
     }
 
+    /**
+     * Creates and array with a valid size
+     */
     public void setArrSize() {
-        System.out.print("Insert array size: ");
+        System.out.print("Въведете размер на масива: ");
         int sz;
         do {
             sz = scanner.nextInt();
