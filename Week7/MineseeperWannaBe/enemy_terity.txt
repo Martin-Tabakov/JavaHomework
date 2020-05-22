@@ -1,0 +1,3 @@
+width:6
+height:7
+mines:5
