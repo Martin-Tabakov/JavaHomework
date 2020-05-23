@@ -64,7 +64,9 @@ public class Game {
         fillMineField();
     }
 
-
+    /**
+     * Assigns positions for the start and finish tiles at random positions excluding corners
+     */
     private void assignStartFinishTiles(){
         Random random = new Random();
         int side = random.nextInt(4);
@@ -94,6 +96,9 @@ public class Game {
         mineField[h2][w2] = new Tile(false,true,false);
     }
 
+    /**
+     * Places all mines randomly on the minefield
+     */
     private void assignMines(){
         Random random = new Random();
         while (mines>0){
@@ -137,6 +142,10 @@ public class Game {
             case 3: changePos(pos); break;
         }
     }
+
+    /**
+     * Creates the coordinates the player wants to move to
+     */
     private Pos getCoordinates(){
         int newH;
         int newW;
@@ -148,7 +157,7 @@ public class Game {
             newH= Integer.parseInt(parts[0]);
             newW= Integer.parseInt(parts[1]);
             gotoPos = new Pos(newH,newW);
-        }while (gotoPos.offBoard(boardHeight,boardWidth) && getPosId(gotoPos)!=-1);
+        }while (gotoPos.offBoard(boardHeight,boardWidth) && getMoveId(gotoPos)!=-1);
         return gotoPos;
     }
 
@@ -156,6 +165,9 @@ public class Game {
         for (String line : lines) System.out.println(line);
     }
 
+    /**
+     * Gets one of the menu options
+     */
     private int getOption(int size){
         boolean isValid;
         int val;
@@ -167,6 +179,10 @@ public class Game {
         return val;
     }
 
+    /**
+     * Makes a probe for mines
+     * @param pos selected position
+     */
     private void makeProbe(Pos pos){
         if(this.probes>0){
             this.probes--;
@@ -178,6 +194,10 @@ public class Game {
         }
     }
 
+    /**
+     * Makes left or right probe probe
+     * @param pos selected position
+     */
     private void scanHorizontal(Pos pos){
         int diff =pos.getWidth() - this.playerPos.getWidth();
         for(int i=0;i<=1;i++){
@@ -188,6 +208,11 @@ public class Game {
             }
         }
     }
+
+    /**
+     * Makes up or down probe probe
+     * @param pos selected position
+     */
     private void scanVertical(Pos pos){
         int diff =pos.getHeight() - this.playerPos.getHeight();
         for(int i=0;i<=1;i++){
@@ -209,8 +234,12 @@ public class Game {
             else this.isDead=true;
     }
 
+    /**
+     * Moves the player to a new position
+     * @param newPos the new position
+     */
     private void changePos(Pos newPos) {
-        int id= getPosId(newPos);
+        int id= getMoveId(newPos);
 
             mineField[playerPos.getHeight()][playerPos.getWidth()].makeVisited();
             this.playerPos.Add(movements[id]);
@@ -227,7 +256,12 @@ public class Game {
         return isAtFinish;
     }
 
-    private int getPosId(Pos newPos){
+    /**
+     * Gets the movement ID
+     * @param newPos the go-to position
+     * @return ID
+     */
+    private int getMoveId(Pos newPos){
         for(int i=0;i<movements.length;i++){
             if( Pos.Equal(Pos.Add(this.playerPos, movements[i]),newPos)) return i;
         }
